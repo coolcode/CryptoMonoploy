@@ -1,7 +1,7 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import './utils/AdminRole.sol';
+import "./utils/AdminRole.sol";
 
 contract UserCenter is AdminRole {
     address[] private _users;
@@ -19,8 +19,8 @@ contract UserCenter is AdminRole {
     }
 
     function _register(address _addr) internal {
-        require(_addr != address(0), 'invalid address');
-        require(!_exists(_addr), 'user exists');
+        require(_addr != address(0), "invalid address");
+        require(!_exists(_addr), "user exists");
         uint256 c = uint256(_addr);
         c |= (_users.length << 160);
         _addressToUser[_addr] = c;
@@ -34,7 +34,7 @@ contract UserCenter is AdminRole {
     }
 
     function _exists(address _addr) internal view returns (bool) {
-        require(_addr != address(0), 'invalid address');
+        require(_addr != address(0), "invalid address");
         return _addressToUser[_addr] != 0;
     }
 
@@ -42,22 +42,12 @@ contract UserCenter is AdminRole {
         return _users.length;
     }
 
-    function getUserInfo(address _addr, uint24 _round)
-        public
-        view
-        returns (
-            uint24,
-            uint16,
-            uint16,
-            uint16,
-            uint24
-        )
-    {
+    function getUserInfo(address _addr, uint24 _round) public view returns (uint24, uint16, uint16, uint16, uint24) {
         if (!_exists(_addr)) {
             return (0, 0, 0, 0, 0);
         }
         uint256 c = _addressToUser[_addr];
-        require(_addr == address(c), 'address not match in getUserInfo');
+        require(_addr == address(c), "address not match in getUserInfo");
         uint24 index = uint24(c >> 160);
         uint24 round = uint24(c >> 232);
         if (round == _round) {
@@ -70,18 +60,15 @@ contract UserCenter is AdminRole {
         }
     }
 
-    function setUserInfo(
-        address _addr,
-        uint16 _pos,
-        uint16 _total_steps,
-        uint16 _roll,
-        uint24 _round
-    ) external onlyAdmin {
+    function setUserInfo(address _addr, uint16 _pos, uint16 _total_steps, uint16 _roll, uint24 _round)
+        external
+        onlyAdmin
+    {
         if (!_exists(_addr)) {
             _register(_addr);
         }
         uint256 c = _addressToUser[_addr];
-        require(_addr == address(c), 'address not match in setUserInfo');
+        require(_addr == address(c), "address not match in setUserInfo");
 
         // bits [addr + index] = 2**184-1
         uint256 mask = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;

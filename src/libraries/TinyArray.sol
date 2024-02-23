@@ -1,10 +1,11 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import './SafeMath16.sol';
+import "./SafeMath16.sol";
 
 library TinyArray {
     using SafeMath16 for uint16;
+
     struct Data {
         uint16[] array;
         uint16 index;
@@ -42,7 +43,7 @@ library TinyArray {
     }
 
     function clear(Data storage self) internal {
-        delete self.array; 
+        delete self.array;
         self.index = 0;
     }
 }

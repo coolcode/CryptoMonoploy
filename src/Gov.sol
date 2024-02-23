@@ -1,9 +1,9 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import './utils/AdminRole.sol';
-import './token/PropertyExchange.sol';
-import './token/ERC20Token.sol';
+import "./utils/AdminRole.sol";
+import "./token/PropertyExchange.sol";
+import "./token/ERC20Token.sol";
 
 contract Gov is AdminRole {
     PropertyExchange private _pe;
@@ -27,13 +27,7 @@ contract Gov is AdminRole {
     }
 
     /* type: 1. jail, 2.penalty */
-    function fine(
-        uint8 group,
-        address player,
-        address bank,
-        uint16 pos,
-        uint256 token_penalty
-    ) external onlyAdmin {
+    function fine(uint8 group, address player, address bank, uint16 pos, uint256 token_penalty) external onlyAdmin {
         _pe.mortgage(player, bank, token_penalty);
         _token.safeTransfer(player, bank, token_penalty);
 

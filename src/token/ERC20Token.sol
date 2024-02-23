@@ -1,9 +1,9 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol';
-import '../utils/AdminRole.sol';
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20Burnable.sol";
+import "../utils/AdminRole.sol";
 
 /**
  * @title ERC20Token
@@ -12,7 +12,7 @@ import '../utils/AdminRole.sol';
  * `ERC20` functions.
  */
 contract ERC20Token is ERC20, AdminRole {
-    uint256 private constant INITIAL_SUPPLY = 10**18 * (10**18);
+    uint256 private constant INITIAL_SUPPLY = 10 ** 18 * (10 ** 18);
     /* candy cannot convert back to ETH */
     mapping(address => uint256) private _candies;
     uint256 private _release_candies = 0;
@@ -23,7 +23,7 @@ contract ERC20Token is ERC20, AdminRole {
     event BurnCandy(address indexed to, uint256 value);
     event Refund(address indexed to, uint256 value);
 
-    constructor() public ERC20('CC Token https://github.com/coolcode', 'CC') {
+    constructor() public ERC20("CC Token https://github.com/coolcode", "CC") {
         _mint(msg.sender, INITIAL_SUPPLY);
     }
 
@@ -33,11 +33,7 @@ contract ERC20Token is ERC20, AdminRole {
      * @param to The address to transfer to.
      * @param value The amount to be transferred.
      */
-    function safeTransfer(
-        address from,
-        address to,
-        uint256 value
-    ) public onlyAdmin returns (bool) {
+    function safeTransfer(address from, address to, uint256 value) public onlyAdmin returns (bool) {
         uint256 bal = balanceOf(from);
         if (bal < value) {
             value = bal;
@@ -99,7 +95,7 @@ contract ERC20Token is ERC20, AdminRole {
      * @return A boolean that indicates if the operation was successful.
      */
     function safeRefund(address account, uint256 value) public onlyAdmin returns (bool) {
-        require(value <= balanceOf(account), 'refund value > balance');
+        require(value <= balanceOf(account), "refund value > balance");
         _burn(account, value);
         emit Refund(account, value);
         return true;
@@ -136,14 +132,10 @@ contract ERC20Token is ERC20, AdminRole {
     }
 
     /* override */
-    function _transfer(
-        address from,
-        address to,
-        uint256 value
-    ) internal override {
-        require(value <= balanceOf(from), 'insufficient balance');
+    function _transfer(address from, address to, uint256 value) internal override {
+        require(value <= balanceOf(from), "insufficient balance");
         if (!isAdmin(msg.sender)) {
-            require(value <= tokenOf(from), 'insufficient token');
+            require(value <= tokenOf(from), "insufficient token");
         }
 
         if (isAdmin(msg.sender) || isAdmin(to)) {

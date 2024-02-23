@@ -1,12 +1,13 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
-import './ERC20Token.sol';
-import '../utils/AdminRole.sol';
+import "openzeppelin-contracts/contracts/math/SafeMath.sol";
+import "./ERC20Token.sol";
+import "../utils/AdminRole.sol";
 
 contract ERC20Referral is AdminRole {
     using SafeMath for uint256;
+
     ERC20Token private _token;
     uint16 private _referral_rate = 5;
     bool private _promo = true;
@@ -43,12 +44,8 @@ contract ERC20Referral is AdminRole {
         _promo = promo;
     }
 
-    function _referral(
-        address beneficiary,
-        address referral,
-        uint256 tokenAmount
-    ) internal {
-        require(_promo, 'no promotion');
+    function _referral(address beneficiary, address referral, uint256 tokenAmount) internal {
+        require(_promo, "no promotion");
         if (_referral_map[beneficiary] == address(0) && referral != address(0) && referral != beneficiary) {
             _referral_map[beneficiary] = referral;
         }
@@ -61,8 +58,8 @@ contract ERC20Referral is AdminRole {
     }
 
     function _airdrop() internal {
-        require(_promo, 'no promotion');
-        require(_airdrop_map[msg.sender] == 0, 'cannot airdrop twice');
+        require(_promo, "no promotion");
+        require(_airdrop_map[msg.sender] == 0, "cannot airdrop twice");
         uint256 candyAmount = 10 ether;
         _airdrop_map[msg.sender] = _airdrop_map[msg.sender].add(candyAmount);
         _token.sendCandy(msg.sender, candyAmount);

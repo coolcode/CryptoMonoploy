@@ -1,17 +1,18 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
-import '../libraries/SafeMath16.sol';
-import '../libraries/Rand.sol';
-import '../utils/AdminRole.sol';
-import './PropertyBase.sol';
-import './PropertyOwnership.sol';
-import './ERC20Token.sol';
+import "openzeppelin-contracts/contracts/math/SafeMath.sol";
+import "../libraries/SafeMath16.sol";
+import "../libraries/Rand.sol";
+import "../utils/AdminRole.sol";
+import "./PropertyBase.sol";
+import "./PropertyOwnership.sol";
+import "./ERC20Token.sol";
 
 contract PropertyExchange is PropertyBase, AdminRole {
     using SafeMath16 for uint16;
     using SafeMath for uint256;
+
     PropertyOwnership private _po;
     ERC20Token private _token;
     uint24 public round = 0;
@@ -43,11 +44,7 @@ contract PropertyExchange is PropertyBase, AdminRole {
     }
 
     /* mortgage houses and take its token to others */
-    function mortgage(
-        address player,
-        address bank,
-        uint256 token_load
-    ) external onlyAdmin {
+    function mortgage(address player, address bank, uint256 token_load) external onlyAdmin {
         uint256 token_balance = _token.balanceOf(player);
 
         if (token_balance < token_load) {
@@ -97,11 +94,7 @@ contract PropertyExchange is PropertyBase, AdminRole {
         }
     }
 
-    function buy(
-        address _buyer,
-        uint16 _pos,
-        uint16 _avgPrice
-    ) external onlyAdmin {
+    function buy(address _buyer, uint16 _pos, uint16 _avgPrice) external onlyAdmin {
         avgPrice = _avgPrice;
         if (_isRawLand(_pos)) {
             _buildProperty(_buyer, _pos);
@@ -238,8 +231,9 @@ contract PropertyExchange is PropertyBase, AdminRole {
         return _price2Token(_price);
     }
 
-    /**************************** private and internal functions ********************************/
-
+    /**
+     * private and internal functions *******************************
+     */
     function _price2Token(uint256 _price) private pure returns (uint256) {
         return uint256(_price).mul(1 ether);
     }
@@ -256,12 +250,7 @@ contract PropertyExchange is PropertyBase, AdminRole {
         _buildProperty(_buyer, _pos, _buy_price, _rent_price);
     }
 
-    function _buildProperty(
-        address _buyer,
-        uint16 _pos,
-        uint16 _buy_price,
-        uint16 _rent_price
-    ) internal {
+    function _buildProperty(address _buyer, uint16 _pos, uint16 _buy_price, uint16 _rent_price) internal {
         /* 32b: gene, 32[40b]: time, 72[16b]: buy price, 88[16b]: rent price, 104:  */
         uint256 _gene_n_date = uint32(Rand.rand()) | (uint256(uint40(now)) << 32);
         uint256 _property = _gene_n_date | (uint256(_buy_price) << 72) | (uint256(_rent_price) << 88);
@@ -331,7 +320,7 @@ contract PropertyExchange is PropertyBase, AdminRole {
             rent_price = _limit(rent_price, 5000);
             return (buy_price, rent_price);
         } else {
-            // w/ house 
+            // w/ house
             uint16 buy_price = _getBuyPrice(p);
             uint16 rent_price = _getRentPrice(p);
             buy_price += Rand.rand16(avgPrice >> 2, avgPrice >> 1);
@@ -356,7 +345,7 @@ contract PropertyExchange is PropertyBase, AdminRole {
 
     function _getProperty(uint16 _pos) internal view returns (uint256) {
         uint32 index = _getIndex(_pos);
-        require(_isOnlinePropertyId(index), 'out of index range');
+        require(_isOnlinePropertyId(index), "out of index range");
         return properties[index];
     }
 

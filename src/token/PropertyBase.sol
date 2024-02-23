@@ -1,5 +1,5 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
 contract PropertyBase {
     /* 32b: gene, 32[40b]: time, 72[16b]: sell price, 88[16b]: rent price  */

@@ -1,7 +1,7 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import './ERC721.sol';
+import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
 abstract contract PropertyEnumerable is ERC721 {
     // Mapping from owner to list of owned token IDs
@@ -28,7 +28,7 @@ abstract contract PropertyEnumerable is ERC721 {
     /**
      * @dev Constructor function
      */
-    constructor() public {
+    constructor() {
         // register the supported interface to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE);
     }
@@ -43,7 +43,7 @@ abstract contract PropertyEnumerable is ERC721 {
      * @param index uint256 representing the index to be accessed of the requested tokens list
      * @return uint256 token ID at the given index of the tokens list owned by the requested address
      */
-    function tokenOfOwnerByIndex(address owner, uint256 index) public override view returns (uint256) {
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view override returns (uint256) {
         if (index < balanceOf(owner)) {
             return _ownedTokens[owner][index];
         }
@@ -54,7 +54,7 @@ abstract contract PropertyEnumerable is ERC721 {
      * @dev Gets the total amount of tokens stored by the contract
      * @return uint256 representing the total amount of tokens
      */
-    function totalSupply() public override view returns (uint256) {
+    function totalSupply() public view override returns (uint256) {
         return _allTokens.length;
     }
 
@@ -64,8 +64,8 @@ abstract contract PropertyEnumerable is ERC721 {
      * @param index uint256 representing the index to be accessed of the tokens list
      * @return uint256 token ID at the given index of the tokens list
      */
-    function tokenByIndex(uint256 index) public override view returns (uint256) {
-        require(index < totalSupply(), 'no property');
+    function tokenByIndex(uint256 index) public view override returns (uint256) {
+        require(index < totalSupply(), "no property");
         return _allTokens[index];
     }
 
@@ -76,11 +76,7 @@ abstract contract PropertyEnumerable is ERC721 {
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
+    function _transfer(address from, address to, uint256 tokenId) internal override {
         super._transfer(from, to, tokenId);
 
         _removeTokenFromOwnerEnumeration(from, tokenId);

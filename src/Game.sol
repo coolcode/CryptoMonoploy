@@ -1,18 +1,18 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
-import '@openzeppelin/contracts/utils/Pausable.sol';
-import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
-import './libraries/SafeMath16.sol';
-import './libraries/Rand.sol';
-import './libraries/TinyArray.sol';
-import './utils/AdminRole.sol';
-import './token/PropertyOwnership.sol';
-import './token/PropertyExchange.sol';
-import './token/ERC20Token.sol';
-import './UserCenter.sol';
-import './Gov.sol';
+import "openzeppelin-contracts/contracts/math/SafeMath.sol";
+import "openzeppelin-contracts/contracts/utils/Pausable.sol";
+import "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import "./libraries/SafeMath16.sol";
+import "./libraries/Rand.sol";
+import "./libraries/TinyArray.sol";
+import "./utils/AdminRole.sol";
+import "./token/PropertyOwnership.sol";
+import "./token/PropertyExchange.sol";
+import "./token/ERC20Token.sol";
+import "./UserCenter.sol";
+import "./Gov.sol";
 
 contract Game is AdminRole, Pausable, ReentrancyGuard {
     using SafeMath for uint256;
@@ -48,18 +48,15 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
     event Win(address indexed from, uint24 indexed round, uint256 value, uint16 numberOfProperty, uint256 time);
 
     modifier onlyMember() {
-        require(msg.sender != address(0), 'sender address is 0x0');
-        require(_token.balanceOf(msg.sender) > 0, 'member has no token');
+        require(msg.sender != address(0), "sender address is 0x0");
+        require(_token.balanceOf(msg.sender) > 0, "member has no token");
         _;
     }
 
-    function setup(
-        PropertyOwnership po,
-        PropertyExchange pe,
-        ERC20Token token,
-        UserCenter uc,
-        Gov gov
-    ) public onlyAdmin {
+    function setup(PropertyOwnership po, PropertyExchange pe, ERC20Token token, UserCenter uc, Gov gov)
+        public
+        onlyAdmin
+    {
         _po = po;
         _pe = pe;
         _token = token;
@@ -187,11 +184,11 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
     function buy() public payable onlyMember nonReentrant {
         //TODO: move the buy logic to PropertyExchange contract
         uint16 _pos = _uc.getPos(msg.sender, round);
-        require(_checkPos(_pos), 'no land or house to buy');
+        require(_checkPos(_pos), "no land or house to buy");
 
         uint32 _index = _pe.propertyId(_pos);
         address _owner = _po.ownerOf(_index);
-        require(_owner != msg.sender, 'cannot buy own house');
+        require(_owner != msg.sender, "cannot buy own house");
 
         _pe.buy(msg.sender, _pos, avgPrice());
         uint16 new_price = _pe.buyPrice(_pos);
@@ -199,7 +196,7 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
 
         uint256 token_amount = _token.balanceOf(msg.sender);
         uint256 token_buy = _price2Token(new_price);
-        require(token_amount >= token_buy, 'insufficient token');
+        require(token_amount >= token_buy, "insufficient token");
 
         if (_owner == address(0) || _owner == address(this)) {
             // new house
@@ -231,16 +228,7 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
         return _uc.getPos(account, round);
     }
 
-    function getWinner()
-        public
-        view
-        returns (
-            address,
-            uint16,
-            uint256,
-            uint256
-        )
-    {
+    function getWinner() public view returns (address, uint16, uint256, uint256) {
         (address _winner, uint16 _num, uint256 _fund, uint256 _total) = _getWinner();
         return (_winner, _num, _fund, _total);
     }
@@ -265,8 +253,9 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
         return _lotteryReward();
     }
 
-    /*************************** private functions *****************************************/
-
+    /**
+     * private functions ****************************************
+     */
     function _rewardToken(address _receiver, uint256 _amount) private returns (bool) {
         return _token.transfer(_receiver, _amount);
     }
@@ -304,14 +293,8 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
     }
 
     function _checkPos(uint16 pos) private view returns (bool) {
-        return
-            pos < NUMBER_OF_PROPERTY &&
-            !_isFreeParking(pos) &&
-            !_isJail(pos) &&
-            !_isLottery(pos) &&
-            !_isQuestionMark(pos) &&
-            _pe.available(pos) &&
-            _pe.ownerOf(pos) != msg.sender;
+        return pos < NUMBER_OF_PROPERTY && !_isFreeParking(pos) && !_isJail(pos) && !_isLottery(pos)
+            && !_isQuestionMark(pos) && _pe.available(pos) && _pe.ownerOf(pos) != msg.sender;
     }
 
     function _isJail(uint16 pos) private view returns (bool) {
@@ -350,7 +333,7 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
 
     function _award() private {
         (address _winner, uint16 _num, uint256 _fund, uint256 _total) = _getWinner();
-        require(_fund > 0, 'invalid fund');
+        require(_fund > 0, "invalid fund");
 
         // no one wins
         if (_winner == address(0)) {
@@ -368,7 +351,7 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
         _rewardToken(_winner, bonus);
 
         //30% left for the next game's bonus
-        
+
         emit Win(_winner, round, bonus, _num, now);
     }
 
@@ -377,16 +360,7 @@ contract Game is AdminRole, Pausable, ReentrancyGuard {
         _token.safeBurn(_from, _amount);
     }
 
-    function _getWinner()
-        private
-        view
-        returns (
-            address,
-            uint16,
-            uint256,
-            uint256
-        )
-    {
+    function _getWinner() private view returns (address, uint16, uint256, uint256) {
         uint16 pos = 1;
         uint256 _total_fund = 0;
         address _winner = address(0);

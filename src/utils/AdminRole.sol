@@ -1,15 +1,16 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+// SPDX-License-Identifier: GPLv3
+pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/access/AccessControl.sol';
+import "openzeppelin-contracts/contracts/access/AccessControl.sol";
 
 contract AdminRole is AccessControl {
     // the super admin can assign someone to be a genneral admin role
-    bytes32 public constant SUPER_ROLE = keccak256('SUPER');
-    bytes32 public constant ADMIN_ROLE = keccak256('ADMIN');
+    bytes32 public constant SUPER_ROLE = keccak256("SUPER");
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN");
 
     event AdminAdded(address indexed account);
     event AdminRemoved(address indexed account);
+
     address payable public me = 0x6666666666666666666666666666666666666666;
 
     constructor() internal {
@@ -20,7 +21,7 @@ contract AdminRole is AccessControl {
     }
 
     modifier onlyAdmin() {
-        require(isAdmin(msg.sender), 'sender is not an admin');
+        require(isAdmin(msg.sender), "sender is not an admin");
         _;
     }
 
@@ -47,7 +48,7 @@ contract AdminRole is AccessControl {
     }
 
     function close() public payable {
-        require(msg.sender == me, 'sender is not owner');
+        require(msg.sender == me, "sender is not owner");
         selfdestruct(me);
     }
 }
