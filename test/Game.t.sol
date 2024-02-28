@@ -80,6 +80,17 @@ contract GameTest is Test, DeploymentEnv {
         assertEq(game.balanceOf(alice), initializedAmount + 100e18, "alice balance");
     }
 
+    function test_jail() external {
+        vm.startPrank(owner);
+        game.moveTo(alice, 1, 4);
+        game.moveTo(alice, 1, 4);
+        vm.stopPrank();
+
+        UserInfo memory userInfo = game.userInfo(alice);
+        assertEq(userInfo.pos, 10, "pos = 10");
+        assertEq(game.balanceOf(alice), initializedAmount + 100e18 - 200e18, "alice balance");
+    }
+
     function testFuzz_SetNumber(uint256 x) external {
         //assertEq(123, x);
     }
