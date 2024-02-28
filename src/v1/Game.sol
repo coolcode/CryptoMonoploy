@@ -74,7 +74,7 @@ contract Game is CommitRevealUpgradeable, PausableUpgradeable {
 
     //receive() external payable { }
 
-    function userInfo(address user) external view returns (UserInfo memory) {
+    function userOf(address user) external view returns (UserInfo memory) {
         return users[user];
     }
 
@@ -155,32 +155,6 @@ contract Game is CommitRevealUpgradeable, PausableUpgradeable {
                 }
             }
         }
-
-        // check rent
-
-        // if (_owner == user) {
-        //     // my house, rent go up!
-        //     _pe.upgrade(pos, true);
-        // } else {
-        //     // someone's house, pay rent
-        //     uint16 rent_fee = _pe.rentPrice(pos);
-        //     _pe.upgrade(pos, false);
-
-        //     uint256 token_rent = _price2Token(rent_fee);
-        //     _pe.mortgage(user, address(this), token_rent);
-
-        //     if (!_inJail(_owner)) {
-        //         // rent
-        //         // 12.5% to bonus pool
-        //         uint256 _bonus = token_rent >> 3;
-        //         _transferToken(_owner, token_rent.sub(_bonus));
-        //         _transferToken(address(this), _bonus);
-        //     } else {
-        //         // owner is in jail, pay to prize pool
-        //         _transferToken(address(this), token_rent);
-        //     }
-        //     emit PayRent(user, pos, rent_fee);
-        // }
     }
 
     function nftOwner(uint16 pos) external view returns (address) {

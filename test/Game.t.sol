@@ -37,7 +37,7 @@ contract GameTest is Test, DeploymentEnv {
 
         bytes memory bytecode = type(Game).creationCode;
         bytes memory initializedData = abi.encodeWithSelector(Game.initialize.selector, owner, nft, gold, map, vault);
-        game = Game(deployProxy("Game", bytecode, initializedData));
+        game = Game(deployProxy(bytecode, initializedData));
 
         gold.approve(address(game), type(uint256).max);
         game.deposit(vault, initializedAmount);
@@ -66,7 +66,7 @@ contract GameTest is Test, DeploymentEnv {
         game.moveTo(alice, 1, 2);
         vm.stopPrank();
 
-        UserInfo memory userInfo = game.userInfo(alice);
+        UserInfo memory userInfo = game.userOf(alice);
         assertEq(userInfo.pos, 3, "pos = 3");
     }
 
@@ -75,7 +75,7 @@ contract GameTest is Test, DeploymentEnv {
         game.moveTo(alice, 1, 4);
         vm.stopPrank();
 
-        UserInfo memory userInfo = game.userInfo(alice);
+        UserInfo memory userInfo = game.userOf(alice);
         assertEq(userInfo.pos, 5, "pos = 5");
         assertEq(game.balanceOf(alice), initializedAmount + 100e18, "alice balance");
     }
@@ -86,7 +86,7 @@ contract GameTest is Test, DeploymentEnv {
         game.moveTo(alice, 1, 4);
         vm.stopPrank();
 
-        UserInfo memory userInfo = game.userInfo(alice);
+        UserInfo memory userInfo = game.userOf(alice);
         assertEq(userInfo.pos, 10, "pos = 10");
         assertEq(game.balanceOf(alice), initializedAmount + 100e18 - 200e18, "alice balance");
     }
